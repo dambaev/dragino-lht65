@@ -197,3 +197,29 @@ struct lht65_message_ext_t {
     ):Option_vt(LHT65Message)
   prval () = $BS.bytes_addback( pf0 | i)
 }
+
+implement message2kvs( i) =
+let
+  #define :: list_vt_cons
+
+  val base
+    =
+    ( @( $BS.pack "temperature_int", $BS.pack i.TempC_SHT)
+    :: @( $BS.pack "Hum_SHT", $BS.pack i.Hum_SHT)
+    :: list_vt_nil()
+    ): list_vt( @($BS.BytestringNSH1, $BS.BytestringNSH1), 2)
+in
+  case+ i.Ext_value of
+  | None_vt() => base
+  | Some_vt(ext) =>
+    ( case+ ext of
+    | Temperature(v) => @( $BS.pack "temperature_ext", $BS.pack v) :: base
+    | Interrupt(v) =>
+      @( $BS.pack "interrupt.is_pin_level_high", $BS.pack v.is_pin_level_high)
+      :: @( $BS.pack "interrupt.is_interrupt_uplink", $BS.pack v.is_interrupt_uplink)
+      :: base
+    | Illumination(v) => @( $BS.pack "illumination", $BS.pack v) :: base
+    | ADC(v) => @( $BS.pack "adc_voltage", $BS.pack v) :: base
+    | Counting(v) => @( $BS.pack "counting", $BS.pack v) :: base
+    )
+end

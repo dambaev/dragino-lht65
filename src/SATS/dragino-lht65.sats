@@ -40,3 +40,9 @@ fn
   ( i: !LHT65Message
   ):<!wrt>
   $BS.BytestringNSH1
+
+fn
+  message2kvs
+  ( i: !LHT65Message
+  ):<!wrt>
+  [n:pos] list_vt( @($BS.BytestringNSH1, $BS.BytestringNSH1), n)
