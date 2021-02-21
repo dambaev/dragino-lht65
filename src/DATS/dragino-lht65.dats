@@ -122,6 +122,9 @@ case+ $UN.cast{int} sensor of
   val (_, v1) = split_uint32( value)
   val v = ($UN.cast{double} v1) / 1000.0
 }
+| 0x07 => Some_vt( Counting( v)) where {
+  val (_, v) = split_uint32( value)
+}
 | _ => None_vt()
 
 implement parse( i) = ret where {
