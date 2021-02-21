@@ -8,22 +8,12 @@ staload BS="{$LIBS}/ats-bytestring/SATS/bytestring.sats"
 datavtype LHT65Ext_sensor =
   | Temperature of double
   | Interrupt of
-    @{ is_connected = bool
-    , is_pin_level_high = bool // true - high, false - low
+    @{ is_pin_level_high = bool // true - high, false - low
     , is_interrupt_uplink = bool
     }
-  | Illumination of
-    @{ is_connected = bool
-    , illumination = uint16 // lux
-    }
-  | ADC of
-    @{ is_connected = bool
-    , voltage = double
-    }
-  | Counting of
-    @{ is_connected = bool
-    , counts = uint16
-    }
+  | Illumination of uint16 // lux
+  | ADC of double
+  | Counting of uint16
 
 vtypedef LHT65Message =
   @{ BatV = uint16 // mV

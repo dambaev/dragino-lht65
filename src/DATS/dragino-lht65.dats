@@ -43,25 +43,12 @@ implement lht65_to_bs( m) = ret where {
       | Temperature( v) => $BS.pack "\"temperature\" : " + $BS.pack v
       | Interrupt( v) => 
         $BS.pack "\"interrupt\": {"
-        + $BS.pack "\"is_connected\": " + $BS.pack v.is_connected
-        + $BS.pack ", \"is_pin_level_high\": " + $BS.pack v.is_pin_level_high
+        + $BS.pack "\"is_pin_level_high\": " + $BS.pack v.is_pin_level_high
         + $BS.pack ", \"is_interrupt_uplink\": " + $BS.pack v.is_interrupt_uplink
         + $BS.pack "}"
-      | Illumination(v) =>
-        $BS.pack "\"illumination\": {"
-        + $BS.pack "\"is_connected\": " + $BS.pack v.is_connected
-        + $BS.pack ", \"illumination\": " + $BS.pack v.illumination
-        + $BS.pack "}"
-      | ADC(v) =>
-        $BS.pack "\"ADC\": {"
-        + $BS.pack "\"is_connected\": " + $BS.pack v.is_connected
-        + $BS.pack ", \"voltage\": " + $BS.pack v.voltage
-        + $BS.pack "}"
-      | Counting(v) =>
-        $BS.pack "\"counting\": {"
-        + $BS.pack "\"is_connected\": " + $BS.pack v.is_connected
-        + $BS.pack ", \"counts\": " + $BS.pack v.counts
-        + $BS.pack "}"
+      | Illumination(v) => $BS.pack "\"illumination\": " + $BS.pack v
+      | ADC(v) => $BS.pack "\"ADC\": " + $BS.pack v
+      | Counting(v) => $BS.pack "\"counting\": " + $BS.pack v
       )
     ): $BS.BytestringNSH1
   val ret
@@ -109,7 +96,7 @@ fn
   ):<>
   Option_vt( LHT65Ext_sensor) =
 case+ $UN.cast{int} sensor of
-| 1 => (* Temperature *)
+| 0x01 => (* Temperature *)
   let
     val (_, value1) = split_uint32 value
     val value16 = $UN.cast{int16} value1
@@ -117,7 +104,17 @@ case+ $UN.cast{int} sensor of
     if value16 = $UN.cast{int16} 0x7FFF
     then None_vt()
     else Some_vt( Temperature(($UN.cast{double} value16) / 100.0))
-  end 
+  end
+| 0x04 => Some_vt( Interrupt(
+  @{ is_pin_level_high = is_pin_level_high = $UN.cast{uint16} 0x01
+  , is_interrupt_uplink = is_interrupt_uplink = $UN.cast{uint16} 0x01
+  }
+  )
+  ) where {
+  val (_, v) = split_uint32 value
+  val is_pin_level_high = (v & $UN.cast{uint16} 0xff00) >> 8
+  val is_interrupt_uplink = (v & $UN.cast{uint16} 0xff)
+}
 | _ => None_vt()
 
 implement parse( i) = ret where {
