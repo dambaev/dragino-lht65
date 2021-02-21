@@ -50,11 +50,16 @@ cleanall::
 
 
 test: \
+		test5 \
 		test4 \
 		test3 \
 		test2 \
 		test1
 
+test5: $(ATS_OBJS)
+	$(ATSCC) $(ATSCCFLAGS) -o $@_bin $(ATS_OBJS) TEST/$@.dats $(ATSLIBS)
+	./$@_bin
+	@touch $@
 test4: $(ATS_OBJS)
 	$(ATSCC) $(ATSCCFLAGS) -o $@_bin $(ATS_OBJS) TEST/$@.dats $(ATSLIBS)
 	./$@_bin

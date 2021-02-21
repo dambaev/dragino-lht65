@@ -115,6 +115,9 @@ case+ $UN.cast{int} sensor of
   val is_pin_level_high = (v & $UN.cast{uint16} 0xff00) >> 8
   val is_interrupt_uplink = (v & $UN.cast{uint16} 0xff)
 }
+| 0x05 => Some_vt( Illumination( v) ) where {
+  val (_, v) = split_uint32 value
+}
 | _ => None_vt()
 
 implement parse( i) = ret where {
