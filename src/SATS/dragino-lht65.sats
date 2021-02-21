@@ -27,6 +27,7 @@ fn
   ( i: LHT65Message
   ):<!wrt>
   void
+overload free with free_lht65message
 
 fn
   parse
