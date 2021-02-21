@@ -118,6 +118,10 @@ case+ $UN.cast{int} sensor of
 | 0x05 => Some_vt( Illumination( v) ) where {
   val (_, v) = split_uint32 value
 }
+| 0x06 => Some_vt( ADC( v)) where {
+  val (_, v1) = split_uint32( value)
+  val v = ($UN.cast{double} v1) / 1000.0
+}
 | _ => None_vt()
 
 implement parse( i) = ret where {
